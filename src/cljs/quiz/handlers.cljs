@@ -57,8 +57,8 @@
 (reg-event-db
  :dataresp
  (fn [db [_ current-data-response]]
-   ;(update-in db [:data-response] concat  current-data-response)))
-   (assoc db :data-response current-data-response)))
+   ;(assoc db :data-response current-data-response)
+   (update-in db [:data-response] concat  current-data-response)))
 
 
 (defn read-data-response [response]
@@ -76,20 +76,12 @@
      (read-data-response (<! (do-http-get data-url))))
   db))
 
-;(def events (kvlt.core/event-source! url))
-
 (defn listen-events []
   (let [events (kvlt.core/event-source! "https://jsdemo.envdev.io/sse")]
     (go (loop []
           (when-let [event (<! events)]
-            ;(log  (nth (:data event) 0))
-            (let [sensordata  (JSON/parse (:data event))
-            ;(js/eval (reader/read-string (:data event)))
-                  ;cnt (count sensordata)
-                  ]
-              (rf/dispatch [:dataresp (walk/keywordize-keys (js->clj sensordata))])
-              ;(log (str "sensordata =-> \n" (count (walk/keywordize-keys (js->clj sensordata))) (js->clj sensordata) "...\n"))
-              )
+            (let [sensordata  (JSON/parse (:data event))]
+              (rf/dispatch [:dataresp (walk/keywordize-keys (js->clj sensordata))]))
             (recur))))))
 
 (listen-events)

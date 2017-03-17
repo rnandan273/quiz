@@ -39,7 +39,7 @@
 (defn home-page []
   (let [data-orig  (rf/subscribe [:data-response])]
   (fn []
-    (let [data (reverse @data-orig)]
+    (let [data (take 10 (reverse @data-orig))]
     [:div 
       [:div {:style {:display "flex" :flex-flow "row wrap" :justify-content "center" :margin-left "20px"}}
        [:h2 "Sensor data "]
@@ -52,6 +52,7 @@
                [:div {:style {:flex 1}} [:h5 (str (:unit (nth data idx)))]]
                [:div {:style {:flex 3}} [:h5 (str (:measurements (nth data idx)))]]
            ]))]))))
+
 
 (def pages
   {:home #'home-page})
